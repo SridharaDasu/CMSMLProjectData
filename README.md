@@ -43,11 +43,11 @@ private:
 
 ```
 
-To get started get code and compile it (verified to work on MacOS and Linux):
+To get started get code and compile it (verified to work on MacOS and Linux - you need c++ compiler and argp library.):
 
 ```
-git clone <>
-cd <>
+git clone https://github.com/SridharaDasu/CMSMLProjectData.git
+cd CMSMLProjectData
 c++ *.cpp -L/usr/local/lib/ -largp -o genMLProjectData
 ```
 
@@ -60,3 +60,7 @@ genMLProjectData --background=232341231 --write=BackgroundRegionData.txt
 genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData.txt
 genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt
 ```
+
+Reference files for above three cases, created with above random seeds, are in the repository. You can double check that your production worked by using the --compare=<file> feature with the same random number seeds as above.  You can generate multiple files, with unique names - say labeled by the seed -- with different seeds. Each file will have 256 events.
+
+For assistance contact: dasu@hep.wisc.edu
