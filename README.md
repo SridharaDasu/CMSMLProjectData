@@ -41,3 +41,9 @@ genMLProjectData --background=232341231 --write=BackgroundRegionData.txt
 genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData.txt
 genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt
 ```
+
+To produce a CSV file with data in ints and floats for some developments, you may use (note hat you must have --background and --write always):
+
+```
+genMLProjectData --background=232341231 --write=BackgroundRegionData.txt --dump=BackgroundRegionData.csv
+```

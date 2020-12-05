@@ -1,5 +1,6 @@
 genMLProjectData
 *.txt
+*.csv
 *~
 *.bak
 #*

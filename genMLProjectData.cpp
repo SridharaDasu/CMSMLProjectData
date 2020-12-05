@@ -27,7 +27,8 @@ static char doc[] = "APx HLS Firmware Development - Data Generator";
 
 static struct argp_option options[] = {
                                        {"read", 'r', "FILE", 0, "Reads target file and writes contexts to AXI streams", 0},
-                                       {"write", 'w', "FILE", 0, "Writes algorithm results to target file", 0},
+                                       {"write", 'w', "FILE", 0, "Writes output data to target file in APx format", 0},
+                                       {"dump", 'd', "FILE", 0, "Dumps output data to a CSV file for non-APx usage", 0},
                                        {"compare", 'c', "FILE", 0, "Compare the algorithm output to target file", 0},
                                        {"background", 'b', "SEED", 0, "Generates a background file given seed", 0},
                                        {"electron", 'e', "ET", 0, "Generates a electron signal file given et in GeV", 0},
@@ -41,6 +42,7 @@ static struct argp_option options[] = {
 struct arguments {
   char *readfile;
   char *writefile;
+  char *csvfile;
   char *cmpfile;
   char *background;
   char *electron;
@@ -56,6 +58,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   switch (key) {
   case 'r': arguments->readfile = arg; break;
   case 'w': arguments->writefile = arg; break;
+  case 'd': arguments->csvfile = arg; break;
   case 'c': arguments->cmpfile = arg; break;
   case 'b': arguments->background = arg; break;
   case 'e': arguments->electron = arg; break;
@@ -73,7 +76,7 @@ static struct argp argp = { options, parse_opt, NULL, doc };
 
 int main(int argc, char **argv) {
   
-  struct arguments arguments = {0, 0, 0, 0, 0, 0, 0, 0, false};
+  struct arguments arguments = {0, 0, 0, 0, 0, 0, 0, 0, 0, false};
 
   argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
@@ -81,6 +84,8 @@ int main(int argc, char **argv) {
     cout << "Will read file " << arguments.readfile << endl;
   if (arguments.writefile)
     cout << "Will write file " << arguments.writefile << endl;
+  if (arguments.csvfile)
+    cout << "Will write csv file " << arguments.csvfile << endl;
   if (arguments.cmpfile) 
     cout << "Will compare to file " << arguments.cmpfile << endl;
   if (arguments.background)
@@ -157,6 +162,13 @@ int main(int argc, char **argv) {
         object_et = atoi(arguments.electron);
       if (arguments.tau)
         object_et = atoi(arguments.tau);
+      ofstream csvfilestream;
+      if (arguments.csvfile) {
+	if (!csvfilestream.is_open()) {
+	  csvfilestream.open(arguments.csvfile, ofstream::out);
+	  csvfilestream << "event,cycle,link,region,et,position,electron,tau" << endl;
+	}
+      }
       for (size_t i = 0; i < N_EVENTS; i++) {
         for (size_t j = 0; j < N_WORDS_PER_FRAME; j++) {
           for (size_t k = 0; k < N_OUTPUT_LINKS; k++) {
@@ -187,6 +199,9 @@ int main(int argc, char **argv) {
               UCTRegion region(et, pos, ele_bit, tau_bit);
 	      uint64_t region_bits = region.bits();
               link_out[j][k] |= (region_bits << l * 16); // pack regions in link word
+	      if (csvfilestream.is_open()) {
+		csvfilestream << i << "," << j << "," << k << "," << l << "," << et << "," << pos << "," << ele_bit << "," << tau_bit << endl;
+	      }
             }
           }
         }
