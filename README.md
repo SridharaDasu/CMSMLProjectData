@@ -51,7 +51,7 @@ cd CMSMLProjectData
 c++ *.cpp -L/usr/local/lib/ -largp -o genMLProjectData
 ```
 
-You can run to produce data.  The random number seed is provided as the value of the option --background, which is necessary to produce data. You have to use --write to save the produced data. You can produce single electron and single tau signals by using the --electron or --tau options.  The value of those variables specifies the transverse momentum of the particle.
+You can run genMLProjectData to produce data.  The random number seed is provided as the value of the option --background, which is necessary to produce data. You have to use --write to save the produced data. You can produce single electron and single tau signals by using the --electron or --tau options.  The value of those variables specifies the transverse momentum of the particle.
 
 The goal of the  ML project is to  produca a model that would have good efficiency >70% to identify 25 GeV objects. The efficiency for 50-GeV objects should be very good >95%.  The background fakes should be 10% or less.
 
