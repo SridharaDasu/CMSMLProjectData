@@ -8,78 +8,103 @@
 #include <iomanip>
 #include <string>
 #include <random>
-
-#include <argp.h>
-
-//#include "algo_top_parameters.h"
-//#include "algo_top.h"
+#include <string.h>
 
 #include "APxLinkData.hh"
 #include "UCTRegion.hh"
 
 using namespace std;
 
-/* argp declarations */
 const char *algo_top_tb_version = "genMLProjectData 1.0";
 const char *algo_top_tb_bug_address = "<dasu@hep.wisc.edu>";
 
 static char doc[] = "APx HLS Firmware Development - Data Generator";
 
-static struct argp_option options[] = {
-                                       {"read", 'r', "FILE", 0, "Reads target file and writes contexts to AXI streams", 0},
-                                       {"write", 'w', "FILE", 0, "Writes output data to target file in APx format", 0},
-                                       {"dump", 'd', "FILE", 0, "Dumps output data to a CSV file for non-APx usage", 0},
-                                       {"compare", 'c', "FILE", 0, "Compare the algorithm output to target file", 0},
-                                       {"background", 'b', "SEED", 0, "Generates a background file given seed", 0},
-                                       {"electron", 'e', "ET", 0, "Generates a electron signal file given et in GeV", 0},
-                                       {"tau", 't', "ET", 0, "Generates a tau signal file given et in GeV", 0},
-                                       {"met", 'm', "MET", 0, "Generates a met signal file given MET in GeV", 0},
-                                       {"jets", 'j', "HET", 0, "Generates a jets signal file given HET in GeV", 0},
-                                       {"verbose", 'v', 0, 0, "Produce verbose output", 0},
-                                       {0},
-};
-
-struct arguments {
-  char *readfile;
-  char *writefile;
-  char *csvfile;
-  char *cmpfile;
-  char *background;
-  char *electron;
-  char *tau;
-  char *met;
-  char *jets;
-  bool verbose;
-};
-
-static error_t parse_opt(int key, char *arg, struct argp_state *state) {
-  struct arguments *arguments = (struct arguments *)state->input;
-
-  switch (key) {
-  case 'r': arguments->readfile = arg; break;
-  case 'w': arguments->writefile = arg; break;
-  case 'd': arguments->csvfile = arg; break;
-  case 'c': arguments->cmpfile = arg; break;
-  case 'b': arguments->background = arg; break;
-  case 'e': arguments->electron = arg; break;
-  case 't': arguments->tau = arg; break;
-  case 'm': arguments->met = arg; break;
-  case 'j': arguments->jets = arg; break;
-  case 'v': arguments->verbose = true; break;
-  default: return ARGP_ERR_UNKNOWN; break;
+char parse(char *arg, char *&name, char *&value) {
+  char *decorated_name = strtok(arg, "=");
+  value = strtok(NULL, "\0");
+  char key = 0;
+  if (strncmp(decorated_name, "--", 2) == 0) {
+    key = decorated_name[2];
+    name = &decorated_name[2];
   }
-
-  return 0;
+  else if (decorated_name[0] == '-') {
+    key = decorated_name[1];
+    name = NULL;
+  }
+  return key;
 }
 
-static struct argp argp = { options, parse_opt, NULL, doc };
 
 int main(int argc, char **argv) {
   
+  struct arguments {
+    char *readfile;
+    char *writefile;
+    char *csvfile;
+    char *cmpfile;
+    char *background;
+    char *electron;
+    char *tau;
+    char *met;
+    char *jets;
+    bool verbose;
+  };
   struct arguments arguments = {0, 0, 0, 0, 0, 0, 0, 0, 0, false};
+  const char* arg_names[10] = {
+			       "read",
+			       "write",
+			       "dump",
+			       "compare",
+			       "background",
+			       "electron",
+			       "tau",
+			       "met",
+			       "jets",
+			       "verbose"
+  };
 
-  argp_parse(&argp, argc, argv, 0, 0, &arguments);
-
+  char argv_copy[argc][1024];
+  char key, *name, *value;
+  for (size_t i = 1; i < argc; i++) {
+    strcpy(argv_copy[i], argv[i]);
+    key = parse(&argv_copy[i][0], name, value);
+    bool match = false;
+    if (name == NULL) {
+      match = true;
+    }
+    else{
+      for (size_t j = 0; j < sizeof(arg_names); j++) {
+	if(strncmp(arg_names[j], name, strlen(name)) == 0) {
+	  match = true;
+	  break;
+	}
+      }
+    }
+    if (match) {
+      switch (key) {
+      case 'r': arguments.readfile = value; break;
+      case 'w': arguments.writefile = value; break;
+      case 'd': arguments.csvfile = value; break;
+      case 'c': arguments.cmpfile = value; break;
+      case 'b': arguments.background = value; break;
+      case 'e': arguments.electron = value; break;
+      case 't': arguments.tau = value; break;
+      case 'm': arguments.met = value; break;
+      case 'j': arguments.jets = value; break;
+      case 'v': arguments.verbose = true; break;
+      default: break;
+      }
+    }
+    else {
+      cerr << "Failed to parse: " << argv[i] << endl;
+      cerr << "Valid options are:" << endl;
+      for (size_t j = 0; j < sizeof(arg_names); j++) {
+	cerr << "\t--" << arg_names[j] << endl;
+      }
+    }
+  }
+  
   if (arguments.readfile)
     cout << "Will read file " << arguments.readfile << endl;
   if (arguments.writefile)

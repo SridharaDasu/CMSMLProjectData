@@ -43,12 +43,12 @@ private:
 
 ```
 
-To get started get code and compile it (verified to work on MacOS and Linux - you need c++ compiler and argp library.):
+To get started get code and compile it (verified to work on MacOS and Linux):
 
 ```
 git clone https://github.com/SridharaDasu/CMSMLProjectData.git
 cd CMSMLProjectData
-c++ *.cpp -L/usr/local/lib/ -largp -o genMLProjectData
+c++ *.cpp -o genMLProjectData
 ```
 
 You can run genMLProjectData to produce data.  The random number seed is provided as the value of the option --background, which is necessary to produce data. You have to use --write to save the produced data. You can produce single electron and single tau signals by using the --electron or --tau options.  The value of those variables specifies the transverse momentum of the particle.
@@ -56,14 +56,14 @@ You can run genMLProjectData to produce data.  The random number seed is provide
 The goal of the  ML project is to  produca a model that would have good efficiency >70% to identify 25 GeV objects. The efficiency for 50-GeV objects should be very good >95%.  The background fakes should be 10% or less.
 
 ```
-genMLProjectData --background=232341231 --write=BackgroundRegionData.txt
-genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData.txt
-genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt
+genMLProjectData --background=232341231 --write=BackgroundRegionData.txt --compare=BackgroundRegionData.ref --dump=BackgroundRegionData.csv
+genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData.txt --compare=ElectronRegionData.ref --dump=ElectronRegionData.csv
+genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --compare=TauRegionData.ref --dump=TauRegionData.csv
 ```
 
-Reference files for above three cases, created with above random seeds, are in the repository. You can double check that your production worked by using the --compare=<file> feature with the same random number seeds as above.  You can generate multiple files, with unique names - say labeled by the seed -- with different seeds. Each file will have 256 events.
+Reference files for above three cases, created with above random seeds, are in the repository. You can double check that your production worked by using the --compare=<file> feature with the same random number seeds as above.  You can generate multiple files, with unique names - say labeled by the seed -- with different seeds. Each file will have 256 events. You can then run over more data, by varying the SEEDs and file names without the --compare option.
 
-To produce a CSV file with data in ints and floats for some developments, you may use (note hat you must have --background and --write always):
+To produce a CSV file with data in ints and floats for some developments, you may use (note that you must have --background and --write always):
 
 ```
 genMLProjectData --background=232341231 --write=BackgroundRegionData.txt --dump=BackgroundRegionData.csv
