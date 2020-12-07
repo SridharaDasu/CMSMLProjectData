@@ -1,0 +1,8 @@
+event: Event number (Integer)
+cycle: Cycle number - there are 3 cycle words of 64-bits per event (Integer)
+link: Link number - there are 16 links on which event data is sent (Integer)
+region: Region number, which is a 16-bit number, within a cycle word (Integer)
+et: Transverse energy deposited in the region (Float)
+position: Position of the cluster within the region, a 4-bit number (Integer)
+electron: Electron bit signifying that the region likely has an electron or photon deposit (Bool)
+tau: Tau bit signifying that the region likely has a tau deposit (Bool)

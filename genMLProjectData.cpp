@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -105,6 +106,8 @@ int main(int argc, char **argv) {
     }
   }
   
+  double object_et = 0;
+  
   if (arguments.readfile)
     cout << "Will read file " << arguments.readfile << endl;
   if (arguments.writefile)
@@ -115,10 +118,14 @@ int main(int argc, char **argv) {
     cout << "Will compare to file " << arguments.cmpfile << endl;
   if (arguments.background)
     cout << "Will generate data with seed = " << arguments.background << endl;
-  if (arguments.electron)
+  if (arguments.electron) {
     cout << "Generated data will include an electron with PT = " << arguments.electron << endl;
-  if (arguments.tau)
+    object_et = atoi(arguments.electron);
+  }
+  if (arguments.tau) {
     cout << "Generated data will include an tau with PT = " << arguments.tau << endl;
+    object_et = atoi(arguments.tau);
+  }
   if (arguments.met)
     cout << "Generated data will include with MET = " << arguments.met << endl;
   if (arguments.jets)
@@ -136,11 +143,7 @@ int main(int argc, char **argv) {
   const size_t N_BITS_PER_EVENT = N_REGION_BITS * N_REGIONS;
   const size_t N_WORDS_PER_FRAME = 4;
   const size_t N_BITS_PER_FRAME = N_WORD_SIZE * N_WORDS_PER_FRAME;
-  size_t N_INPUT_LINKS;
-  if (N_BITS_PER_EVENT % N_BITS_PER_FRAME)
-    N_INPUT_LINKS = (N_BITS_PER_EVENT / N_BITS_PER_FRAME) + 1;
-  else
-    N_INPUT_LINKS = (N_BITS_PER_EVENT / N_BITS_PER_FRAME);
+  const size_t N_INPUT_LINKS = N_REGIONS_PHI;
   const size_t N_OUTPUT_LINKS = N_INPUT_LINKS;
   const size_t MAX_MEMORY_WORDS = 1024;
   const size_t N_EVENTS = MAX_MEMORY_WORDS / N_WORDS_PER_FRAME;
@@ -180,53 +183,50 @@ int main(int argc, char **argv) {
       std::uniform_real_distribution<double> tau_id(0., 1.0);
       std::uniform_real_distribution<double> ele_id(0., 1.0);
       std::uniform_int_distribution<int> position_distribution(0, 16);
-      std::uniform_int_distribution<int> object_link_distribution(0, N_OUTPUT_LINKS);
-      std::uniform_int_distribution<int> object_word_distribution(0, N_REGIONS_PER_WORD);
-      double object_et = 0;
-      if (arguments.electron)
-        object_et = atoi(arguments.electron);
-      if (arguments.tau)
-        object_et = atoi(arguments.tau);
+      std::uniform_int_distribution<int> object_phi_distribution(0, N_REGIONS_PHI);
+      std::uniform_int_distribution<int> object_eta_distribution(0, N_REGIONS_ETA);
       ofstream csvfilestream;
       if (arguments.csvfile) {
 	if (!csvfilestream.is_open()) {
 	  csvfilestream.open(arguments.csvfile, ofstream::out);
-	  csvfilestream << "event,cycle,link,region,et,position,electron,tau" << endl;
+	  csvfilestream << "event,eta,phi,et,position,electron,tau" << endl;
 	}
       }
       for (size_t i = 0; i < N_EVENTS; i++) {
-        for (size_t j = 0; j < N_WORDS_PER_FRAME; j++) {
-          for (size_t k = 0; k < N_OUTPUT_LINKS; k++) {
-            link_out[j][k] = 0;
-            for (size_t l = 0; l < N_REGIONS_PER_WORD; l++) {
-              double et = et_distribution(generator);
-              int pos = position_distribution(generator);
-              bool tau_bit = false;
-              if(arguments.tau) {
-                size_t object_l = object_link_distribution(generator);
-                size_t object_w = object_word_distribution(generator);
-                if (k == object_l and j == object_w) {
+	cout << i;
+        for (size_t eta = 0; eta < N_REGIONS_ETA; eta++) {
+	  for (size_t phi = 0; phi < N_REGIONS_PHI; phi++) {
+	    cout << ".";
+	    size_t j = eta / N_WORDS_PER_FRAME; // Four eta fit in a 64-bit word
+	    size_t l = eta % N_WORDS_PER_FRAME; // Four 64-bit words per link
+	    if (l == 0) link_out[j][phi] = 0;
+	    double et = et_distribution(generator);
+	    int pos = position_distribution(generator);
+	    bool tau_bit = false;
+	    if(arguments.tau) {
+	      size_t object_phi = object_phi_distribution(generator);
+	      size_t object_eta = object_eta_distribution(generator);
+                if (phi == object_phi and eta == object_eta) {
                   et += object_et;
                   if(tau_id(generator) < 0.8) tau_bit = true;
                 }
-              }
-              if(tau_id(generator) < 0.3) tau_bit = true;
-              bool ele_bit = false;
-              if(arguments.electron) {
-                size_t object_l = object_link_distribution(generator);
-                size_t object_w = object_word_distribution(generator);
-                if (k == object_l and j == object_w) {
-                  et += object_et;
-                  if(ele_id(generator) < 0.9) ele_bit = true;
-                }
-              }
-              if(ele_id(generator) < 0.1) ele_bit = true;
-              UCTRegion region(et, pos, ele_bit, tau_bit);
-	      uint64_t region_bits = region.bits();
-              link_out[j][k] |= (region_bits << l * 16); // pack regions in link word
-	      if (csvfilestream.is_open()) {
-		csvfilestream << i << "," << j << "," << k << "," << l << "," << et << "," << pos << "," << ele_bit << "," << tau_bit << endl;
+	    }
+	    if(tau_id(generator) < 0.3) tau_bit = true;
+	    bool ele_bit = false;
+	    if(arguments.electron) {
+	      size_t object_phi = object_phi_distribution(generator);
+	      size_t object_eta = object_eta_distribution(generator);
+	      if (phi == object_phi and eta == object_eta) {
+		et += object_et;
+		if(ele_id(generator) < 0.9) ele_bit = true;
 	      }
+	    }
+	    if(ele_id(generator) < 0.1) ele_bit = true;
+	    UCTRegion region(et, pos, ele_bit, tau_bit);
+	    uint64_t region_bits = region.bits();
+	    link_out[j][phi] |= (region_bits << l * 16); // pack regions in link word
+	    if (csvfilestream.is_open()) {
+	      csvfilestream << eta << "," << phi << "," << et << "," << pos << "," << ele_bit << "," << tau_bit << endl;
             }
           }
         }
@@ -244,6 +244,7 @@ int main(int argc, char **argv) {
             datafile_out.add(c, k, v);
           }
         }
+	cout << endl;
       }
     }
     datafile_out.write(arguments.writefile);
@@ -254,6 +255,7 @@ int main(int argc, char **argv) {
   }
   
   if (arguments.cmpfile) {
+    cout << arguments.cmpfile << endl;
     APxLinkData datafile_cmp(N_OUTPUT_LINKS);
     datafile_cmp.read(arguments.cmpfile);
 

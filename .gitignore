@@ -4,3 +4,4 @@ genMLProjectData
 *~
 *.bak
 #*
+*.dSYM
