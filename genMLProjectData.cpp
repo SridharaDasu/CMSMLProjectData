@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
 	    uint64_t region_bits = region.bits();
 	    link_out[j][phi] |= (region_bits << l * 16); // pack regions in link word
 	    if (csvfilestream.is_open()) {
-	      csvfilestream << eta << "," << phi << "," << et << "," << pos << "," << ele_bit << "," << tau_bit << endl;
+	      csvfilestream << i << "," << eta << "," << phi << "," << et << "," << pos << "," << ele_bit << "," << tau_bit << endl;
             }
           }
         }
