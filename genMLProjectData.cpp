@@ -194,6 +194,8 @@ int main(int argc, char **argv) {
       }
       for (size_t i = 0; i < N_EVENTS; i++) {
 	cout << i;
+	size_t object_phi = object_phi_distribution(generator);
+	size_t object_eta = object_eta_distribution(generator);
         for (size_t eta = 0; eta < N_REGIONS_ETA; eta++) {
 	  for (size_t phi = 0; phi < N_REGIONS_PHI; phi++) {
 	    cout << ".";
@@ -204,20 +206,16 @@ int main(int argc, char **argv) {
 	    int pos = position_distribution(generator);
 	    bool tau_bit = false;
 	    if(arguments.tau) {
-	      size_t object_phi = object_phi_distribution(generator);
-	      size_t object_eta = object_eta_distribution(generator);
-                if (phi == object_phi and eta == object_eta) {
-                  et += object_et;
+                if (phi == object_phi && eta == object_eta) {
+                  et += object_et; cout << et;
                   if(tau_id(generator) < 0.8) tau_bit = true;
                 }
 	    }
 	    if(tau_id(generator) < 0.3) tau_bit = true;
 	    bool ele_bit = false;
 	    if(arguments.electron) {
-	      size_t object_phi = object_phi_distribution(generator);
-	      size_t object_eta = object_eta_distribution(generator);
-	      if (phi == object_phi and eta == object_eta) {
-		et += object_et;
+	      if (phi == object_phi && eta == object_eta) {
+		et += object_et; cout << et;
 		if(ele_id(generator) < 0.9) ele_bit = true;
 	      }
 	    }
