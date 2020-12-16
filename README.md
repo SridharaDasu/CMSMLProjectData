@@ -29,6 +29,16 @@
 
 ```pip install notebook```
 
+5. To generate the data, use the code and follow the instructions from [here](https://github.com/SridharaDasu/CMSMLProjectData).
+
+You can create a new folder 'output_data' to store the generated mock data by running the following code.
+
+```
+genMLProjectData --background=232341231 --write=BackgroundRegionData.txt --dump=output_data/BackgroundRegionData.csv
+genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData.txt --dump=output_data/ElectronRegionData.csv
+genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --dump=output_data/TauRegionData.csv
+```
+
 4. The `EDA_generatedData.ipynb` file contains the code performing Exploratory Data Analysis on the generated mock data.
 To run the notebook, run the following command in the directory with the notebook at the Terminal (Mac/Linux) or Command Prompt (Windows):
 
