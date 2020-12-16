@@ -1,7 +1,0 @@
-event: Event number (Integer)
-eta: Index of eta coordinate 0-13 (Integer)
-phi: Index of phi coordinate, 0-17, which is also specifies the optical link (Integer)
-et: Transverse energy deposited in the region (Float)
-position: Position of the cluster within the region, a 4-bit number (Integer)
-electron: Electron bit signifying that the region likely has an electron or photon deposit (Bool)
-tau: Tau bit signifying that the region likely has a tau deposit (Bool)
