@@ -39,7 +39,7 @@ genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData
 genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --dump=output_data/TauRegionData.csv
 ```
 
-6. The `EDA_allData.ipynb` file contains the code performing Exploratory Data Analysis on the merged generated mock data.
+6. The `Event_Clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development on the generated mock data.
 To run the notebook, run the following command in the directory with the notebook at the Terminal (Mac/Linux) or Command Prompt (Windows):
 
 ```jupyter notebook```
