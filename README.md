@@ -39,7 +39,13 @@ genMLProjectData --background=987654323 --electron=50 --write=ElectronRegionData
 genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --dump=output_data/TauRegionData.csv
 ```
 
-6. The `Event_Clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development on the generated mock data.
-To run the notebook, run the following command in the directory with the notebook at the Terminal (Mac/Linux) or Command Prompt (Windows):
+6. To run the notebook, run the following command in the directory with the notebook at the Terminal (Mac/Linux) or Command Prompt (Windows):
 
 ```jupyter notebook```
+
+
+##### About the notebooks
+
+- The `Event_Clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development for a single event of the electron region data.
+- The `Electron_data_clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development for all events of the electron region data.
+- The `Exploratory_data_analysis_all.ipynb` file contains the code performing Exploratory Data Analysis on the generated mock data.
