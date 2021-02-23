@@ -49,3 +49,4 @@ genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --dum
 - The `Event_Clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development for a single event of the electron region data.
 - The `Electron_data_clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development for all events of the electron region data.
 - The `Exploratory_data_analysis_all.ipynb` file contains the code performing Exploratory Data Analysis on the generated mock data.
+- The 'dimension_reduction.ipynb' file contains the code for reducing the dimension of 252 rows of an event to 63 using pooling.
