@@ -8,3 +8,6 @@ genMLProjectData
 
 # jupyter files
 .ipynb_checkpoints/
+
+misc/
+dimension_reduction.ipynb
