@@ -1,5 +1,9 @@
 # Importing necessary libraries
 import numpy as np
+import logging
+
+# Logger
+log = logging.getLogger(__name__)
 
 # We will be using this list to find if any signal bits i.e, Electron = True values have these positions.
 # If they do, we will be merging the value of their energy.
@@ -7,7 +11,7 @@ horizontal_list_border = [(0, 3), (4, 7), (8, 11), (12, 15)]
 vertical_list_border = [(15, 3), (14, 2), (13, 1), (12, 0)]
 
 def merge_adjacent_energy(matrix_signal, matrix_energy, matrix_position):
-     """
+    """
     Merge the value of energies if they lie in border regions.
     Find adjacent electron True bits and 
     check if their position matches our horizontal or vertical list of bordering positions.
@@ -44,9 +48,9 @@ def merge_adjacent_energy(matrix_signal, matrix_energy, matrix_position):
                     
                     if pos_set in horizontal_list_border or pos_set in vertical_list_border:
                         # Position set lies on the edge of UCT region
-                        print("Match found:", pos_set)
-                        print("Coord 1: (%s , %s)" % (i, j-1))
-                        print("Coord 2: (%s , %s)" % (i, j))
+                        log.info("Border Match found:", pos_set)
+
+                        log.info("Match Coord 1: (%s , %s)" % (i, j-1))
                         # Merge the energies
                         energy_values = merge_function(matrix_energy, i, j) 
 
@@ -64,9 +68,9 @@ def merge_function(matrix_et, i, j):
     energy1 =  matrix_et.item(i, j-1)
     energy2 =  matrix_et.item(i, j)
    
-    print("Merging energies:")
-    print("Energy1:", energy1)
-    print("Energy2:", energy2)
+    log.info("Merging energies:")
+    log.info("Energy1:", energy1)
+    log.info("Energy2:", energy2)
 
     # If the first position contains higher ET, merge the energy of both the positions and save it in that position
     if energy1>energy2:
