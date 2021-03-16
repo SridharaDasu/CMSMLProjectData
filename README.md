@@ -46,6 +46,13 @@ genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --dum
 
 ##### About the notebooks
 
+1. The '1. get_uct_borders.ipynb' gets the tuple value of the 4x4 border regions of the original 72x56 data values.
+2. The '2. get_event_data.ipynb' is just a helper notebook to retrieve data for a single event.
+3. The '3. Merge_module.ipynb' uses our custom module 'merger.py' to merge the value of energies in bordering regions with True signal values.
+4. The '4. select_and_sort.ipynb' implements the selection and sorting of data to reduce its dimensions.
+
+###### Other
+
 - The `Event_Clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development for a single event of the electron region data.
 - The `Electron_data_clustering.ipynb` file contains the code performing Exploratory Data Analysis and Model Development for all events of the electron region data.
 - The `Exploratory_data_analysis_all.ipynb` file contains the code performing Exploratory Data Analysis on the generated mock data.
