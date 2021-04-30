@@ -50,6 +50,7 @@ genMLProjectData --background=478343223 --tau=50 --write=TauRegionData.txt --dum
 2. The '2. get_event_data.ipynb' is just a helper notebook to retrieve data for a single event.
 3. The '3. Merge_module.ipynb' uses our custom module 'merger.py' to merge the value of energies in bordering regions with True signal values.
 4. The '4. select_and_sort.ipynb' implements the selection and sorting of data to reduce its dimensions.
+5. The '5. jet_merge.ipynb' implements the merging, selection and sorting of jet data to reduce its dimensions.
 
 ###### Other
 

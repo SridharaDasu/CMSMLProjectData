@@ -1,5 +1,7 @@
 # Importing necessary libraries
 import numpy as np
+import seaborn as sns
+import pandas as pd
 import logging
 from skimage.util import view_as_blocks
 
@@ -69,6 +71,20 @@ def get_energy_sums(event_data):
         
     return sum_energy_index
 
+def plot_et(data):
+    """
+    Function to plot the ET values of jet signal data after merging them.
+    Args:
+        data: DataFrame containing event data
+    
+    Displays a plot showing values of ET in a 14x18 eta-phi plane.
+    """
+    cm = sns.light_palette("blue", as_cmap=True)
+    x = pd.DataFrame(get_matrix(data, 'et'))
+    x = x.style.background_gradient(cmap = cm)
+    print("Energy values of Jet after merging")
+    display(x)
+
 def select_and_sort_jet_data(event_data):
     """
     Function to sort and select limited amount of values from rows containing energy (with True signals).
@@ -94,6 +110,9 @@ def select_and_sort_jet_data(event_data):
         # electron does not exist in this index
         if idx not in energy_index_list.keys():
             event_data_final.loc[idx, 'et']= 0
+    
+    # Plot the values into a 14x18 plane
+    plot_et(event_data_final)
     
     # Get non-zero values
     event_data_final = event_data_final[event_data_final['et']!=0]
