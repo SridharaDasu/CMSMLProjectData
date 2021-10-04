@@ -5,3 +5,10 @@ genMLProjectData
 *.bak
 #*
 *.dSYM
+
+# jupyter files
+.ipynb_checkpoints/
+
+misc/
+dimension_reduction.ipynb
+__pycache__/
