@@ -12,3 +12,5 @@ genMLProjectData
 misc/
 dimension_reduction.ipynb
 __pycache__/
+.vscode
+*.exe
