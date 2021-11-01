@@ -14,3 +14,8 @@ dimension_reduction.ipynb
 __pycache__/
 .vscode
 *.exe
+
+# Datasets and models
+*.npy
+*.pkl
+*.h5
