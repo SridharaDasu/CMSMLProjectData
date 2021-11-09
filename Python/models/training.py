@@ -48,7 +48,7 @@ if __name__=='__main__':
         callbacks=[chk,es])
     
     # convert the history.history dict to a pandas DataFrame:     
-    hist_df = pd.DataFrame(history.history) 
+    hist_df = pd.DataFrame(history.history)
 
     # save to json:  
     hist_json_file = MODEL_PATH+MODEL_NAME+'_history.json' 
