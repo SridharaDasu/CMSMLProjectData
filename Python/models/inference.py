@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-import keras
-from keras.models import model_from_json
+from tensorflow import keras
+from tensorflow.keras.models import model_from_json
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve, auc
 from matplotlib import pyplot as plt
@@ -9,7 +9,7 @@ import seaborn as sns
 
 MODEL_PATH = './Python/models/results/'
 DATA_PATH = './Python/data/splitdata/'
-MODEL_NAME = 'fc_dnn'
+MODEL_NAME = 'spc_dnn'
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)

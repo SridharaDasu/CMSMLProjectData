@@ -2,7 +2,7 @@ import os
 import pandas
 from Python.util.data_reader import *
 
-def data_gen(n=100, REGION_TYPE='BACKGROUND'):
+def data_gen(n=1000, REGION_TYPE='BACKGROUND'):
     data_gen = DataStream()
     print('%s data generation in process' % REGION_TYPE)
     data_gen.generate_data(n, REGION_TYPE)
@@ -10,4 +10,4 @@ def data_gen(n=100, REGION_TYPE='BACKGROUND'):
 
 # Simple Raw Data data  Generator
 if __name__=='__main__':
-    data_gen(REGION_TYPE='ELECTRON')
+    data_gen()

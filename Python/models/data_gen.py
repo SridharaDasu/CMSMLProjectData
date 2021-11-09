@@ -74,8 +74,11 @@ def xy_dataset(bgdata, adata, split=0.2, scale=True, save_path=None):
 
 # Simple Raw Data data  Generator
 if __name__=='__main__':
-    #data = pd.read_csv('./Python/data/ELECTRONdata_raw.csv')
-    #data = raw_to_matrix(data, save_path='./Python/data/ELECTRON')
+    data = pd.read_csv('./Python/data/ELECTRONdata_raw.csv')
+    data = raw_to_matrix(data, save_path='./Python/data/ELECTRON')
+
+    data = pd.read_csv('./Python/data/BACKGROUNDdata_raw.csv')
+    data = raw_to_matrix(data, save_path='./Python/data/BACKGROUND')
 
     bgdata = np.load('./Python/data/BACKGROUNDdata_raw_2d.npy')
     bgdata = bgdata.reshape(bgdata.shape[0], int(bgdata.shape[1]*bgdata.shape[2]))

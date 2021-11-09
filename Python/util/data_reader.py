@@ -4,8 +4,9 @@ import numpy as np
 import csv
 import subprocess
 from random import sample
+from tqdm import tqdm
 
-EXE_PATH = './genMLProjectData.exe'
+EXE_PATH = './genMLProjectData'
 DATA_PATH = './Python/data/'
 
 
@@ -31,20 +32,20 @@ class DataStream():
     def single_packet(self, seed, REGION_TYPE='BACKGROUND'):
         # generate single packet data: 256 events/ 1 file
         if REGION_TYPE=='BACKGROUND':
-            subprocess.call(["genMLProjectData.exe", "--background="+str(seed), "--write="+DATA_PATH+REGION_TYPE+
+            subprocess.call([EXE_PATH, "--background="+str(seed), "--write="+DATA_PATH+REGION_TYPE+
                         "RegionData.txt", "--dump="+DATA_PATH+REGION_TYPE+"RegionData.csv"], stdout=subprocess.DEVNULL)
         elif REGION_TYPE=='ELECTRON':
-            subprocess.call(["genMLProjectData.exe", "--background="+str(seed), '--electron=50', "--write="+DATA_PATH+REGION_TYPE+
+            subprocess.call([EXE_PATH, "--background="+str(seed), '--electron=50', "--write="+DATA_PATH+REGION_TYPE+
                         "RegionData.txt", "--dump="+DATA_PATH+REGION_TYPE+"RegionData.csv"], stdout=subprocess.DEVNULL)
         elif REGION_TYPE=='TAU':
-            subprocess.call(["genMLProjectData.exe", "--background="+str(seed), '--tau=50', "--write="+DATA_PATH+REGION_TYPE+
+            subprocess.call([EXE_PATH, "--background="+str(seed), '--tau=50', "--write="+DATA_PATH+REGION_TYPE+
                         "RegionData.txt", "--dump="+DATA_PATH+REGION_TYPE+"RegionData.csv"], stdout=subprocess.DEVNULL)
 
     def generate_data(self, data_num, REGION_TYPE='BACKGROUND'):
         seeds = sample(range(999999999), data_num)
         data = pd.DataFrame()
         csv_reader = CSVReader()
-        for idx in range(data_num):
+        for idx in tqdm(range(data_num)):
             self.single_packet(seeds[idx], REGION_TYPE)
             file_path = DATA_PATH+REGION_TYPE+"RegionData.csv"
             datapoint = csv_reader.read_csv_to_df(file_path)

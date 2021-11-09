@@ -5,6 +5,7 @@ genMLProjectData
 *.bak
 #*
 *.dSYM
+*.out
 
 # jupyter files
 .ipynb_checkpoints/
