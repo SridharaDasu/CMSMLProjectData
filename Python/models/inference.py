@@ -9,7 +9,7 @@ import seaborn as sns
 
 MODEL_PATH = './Python/models/results/'
 DATA_PATH = './Python/data/splitdata/'
-MODEL_NAME = 'spc_dnn'
+MODEL_NAME = 'fc_dnn'
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)

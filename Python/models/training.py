@@ -3,13 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-from models import spc_dnn
+from models import fc_dnn
 
 EPOCHS = 200
 BATCH_SIZE = 512
 VAL_SPLIT = 0.2
 MODEL_PATH = './Python/models/results/'
-MODEL_NAME = 'spc_dnn'
+MODEL_NAME = 'fc_dnn'
 
 def training_plot(history, save_path):
     plt.plot(history.history['loss'])
@@ -28,14 +28,14 @@ if __name__=='__main__':
     y_train = np.load(data_path+'x_test.npy')
 
     # Creating a new model
-    model = spc_dnn()
+    model = fc_dnn()
 
     #saving model architecture
     model_arch = model.to_json()
     with open(MODEL_PATH+MODEL_NAME+'.json','w') as json_file:
         json_file.write(model_arch)
 
-    model.compile(loss='msle', metrics=['mse'], optimizer='adam')
+    model.compile(loss='mse', metrics=['msle'], optimizer='adam')
     chk = ModelCheckpoint(MODEL_PATH+'weights_%s.h5' % MODEL_NAME, monitor='val_loss', mode='min', save_best_only=True, save_weights_only=True, verbose=1)
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=3)
 
