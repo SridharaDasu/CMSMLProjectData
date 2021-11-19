@@ -71,9 +71,7 @@ def xy_dataset(bgdata, adata, split=0.2, scale=True, save_path=None):
 
     return x_train, x_test, y_train, y_test
 
-
-# Simple Raw Data data  Generator
-if __name__=='__main__':
+def fict_data():
     data = pd.read_csv('./Python/data/ELECTRONdata_raw.csv')
     data = raw_to_matrix(data, save_path='./Python/data/ELECTRON')
 
@@ -85,4 +83,9 @@ if __name__=='__main__':
     adata = np.load('./Python/data/ELECTRONdata_raw_2d.npy')
     adata = adata.reshape(adata.shape[0], int(adata.shape[1]*adata.shape[2]))
 
-    xy_dataset(bgdata, adata, split=0.2, scale=True, save_path='./Python/data/splitdata/')
+    return xy_dataset(bgdata, adata, split=0.2, scale=True, save_path='./Python/data/splitdata/') 
+
+
+# Simple Raw Data data Generator
+if __name__=='__main__':
+    

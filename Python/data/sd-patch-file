@@ -1,0 +1,67 @@
+diff --git a/convert_to_h5_new.py b/convert_to_h5_new.py
+index 6aff454..4073c58 100644
+--- a/convert_to_h5_new.py
++++ b/convert_to_h5_new.py
+@@ -26,7 +26,6 @@ def to_np_array(ak_array, maxN=100, num_entries = 576, pad=0):
+ def store_objects(arrays, nentries, nobj=10, obj='jet'):
+     '''store objects in zero-padded numpy arrays'''
+     l1Obj_cyl = np.zeros((nentries,nobj,5))
+-    l1Obj_cart = np.zeros((nentries,nobj,5))
+     pt = to_np_array(arrays['{}Et'.format(obj)],maxN=nobj, num_entries=nentries)
+     eta = to_np_array(arrays['{}Eta'.format(obj)],maxN=nobj,num_entries=nentries)
+     phi = to_np_array(arrays['{}Phi'.format(obj)],maxN=nobj,num_entries=nentries)
+@@ -41,9 +40,7 @@ def store_objects(arrays, nentries, nobj=10, obj='jet'):
+     l1Obj_cyl[:,:,2] = phi
+     l1Obj_cyl[:,:,3] = eg
+     l1Obj_cyl[:,:,4] = tau
+-    l1Obj_cart[:,:,0] = pt*np.cos(phi)
+-    l1Obj_cart[:,:,1] = pt*np.sin(phi)
+-    l1Obj_cart[:,:,2] = pt*np.sinh(eta)
++
+ 
+     # now sort in descending pT order if needed
+     sort_indices = np.argsort(-pt,axis=1)
+@@ -54,12 +51,8 @@ def store_objects(arrays, nentries, nobj=10, obj='jet'):
+         l1Obj_cyl[:,:,2] = np.take_along_axis(l1Obj_cyl[:,:,2], sort_indices, axis=1)
+         l1Obj_cyl[:,:,3] = np.take_along_axis(l1Obj_cyl[:,:,3], sort_indices, axis=1)
+         l1Obj_cyl[:,:,4] = np.take_along_axis(l1Obj_cyl[:,:,4], sort_indices, axis=1)
+-        l1Obj_cart[:,:,0] = np.take_along_axis(l1Obj_cart[:,:,0], sort_indices, axis=1)
+-        l1Obj_cart[:,:,1] = np.take_along_axis(l1Obj_cart[:,:,1], sort_indices, axis=1)
+-        l1Obj_cart[:,:,2] = np.take_along_axis(l1Obj_cart[:,:,2], sort_indices, axis=1)
+-        l1Obj_cart[:,:,3] = np.take_along_axis(l1Obj_cart[:,:,3], sort_indices, axis=1)
+-        l1Obj_cart[:,:,4] = np.take_along_axis(l1Obj_cart[:,:,4], sort_indices, axis=1)
+-    return l1Obj_cyl, l1Obj_cart
++
++    return l1Obj_cyl
+ 
+ def convert_to_h5(input_file, output_file, tree_name):
+     inFile = uproot.open(input_file)
+@@ -111,7 +104,7 @@ def convert_to_h5(input_file, output_file, tree_name):
+     nentries = len(arrays['vRegionEt'])
+     print("nentries: " + str(nentries))
+ 
+-    l1Region_cyl, l1Region_cart = store_objects(arrays, nentries, nobj=nregions, obj='vRegion')
++    l1Region_cyl = store_objects(arrays, nentries, nobj=nregions, obj='vRegion')
+     
+     print("cyl data size: " + str(l1Region_cyl.shape))
+     #l1Jet_cyl, l1Jet_cart = store_objects(arrays, nentries, nobj=njets, obj='jet')
+@@ -122,7 +115,7 @@ def convert_to_h5(input_file, output_file, tree_name):
+         #outFile.create_dataset('FeatureNames_cyl', data=cylNames, compression='gzip')
+         #outFile.create_dataset('FeatureNames_cart', data=cartNames, compression='gzip')
+         outFile.create_dataset('l1Region_cyl', data=l1Region_cyl, compression='gzip')
+-        outFile.create_dataset('l1Region_cart', data=l1Region_cart, compression='gzip')
++        # outFile.create_dataset('l1Region_cart', data=l1Region_cart, compression='gzip')
+         #outFile.create_dataset('l1Jet_cyl', data=l1Jet_cyl, compression='gzip')
+         #outFile.create_dataset('l1Jet_cart', data=l1Jet_cart, compression='gzip')
+         #outFile.create_dataset('l1Muon_cyl', data=l1mu_cyl, compression='gzip')
+diff --git a/requirements.txt b/requirements.txt
+new file mode 100644
+index 0000000..53fe51e
+--- /dev/null
++++ b/requirements.txt
+@@ -0,0 +1,5 @@
++awkward==1.5.1
++awkward1==1.0.0
++h5py==3.5.0
++numpy==1.21.4
++uproot==4.1.8
