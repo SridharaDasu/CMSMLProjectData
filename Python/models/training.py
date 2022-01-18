@@ -9,9 +9,9 @@ EPOCHS = 200
 BATCH_SIZE = 512
 VAL_SPLIT = 0.2
 MODEL_PATH = './Python/models/results/'
-MODEL_NAME = 'fc_dnn'
+MODEL_NAME = 'fc_dnn_rd'
 PT_PATH = './Python/models/results/pt_weights/'  # Keep the pretrained weights in this folder
-
+PT_MODEL_NAME = 'fc_dnn'
 
 if __name__=='__main__':
     # Importing Processed Data
@@ -20,7 +20,7 @@ if __name__=='__main__':
     y_train = np.load(data_path+'x_test.npy')
 
     # Creating a new model
-    model = fc_dnn(load_wt=PT_PATH+'weights_%s.h5' % MODEL_NAME)
+    model = fc_dnn(load_wt=PT_PATH+'weights_%s.h5' % PT_MODEL_NAME)
 
     #saving model architecture
     model_arch = model.to_json()
