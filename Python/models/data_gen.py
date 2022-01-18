@@ -4,9 +4,39 @@ import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-
+import h5py
 
 DIM = (14, 18)   # Eta x Phi
+
+def load_h5_data(path = './Python/data/ZB2018D.h5', dname='l1Region_cyl'):
+    data_file = h5py.File(path, 'r')
+    dset = data_file[dname]
+    dset = dset[:,:,0]   # modify axis accordingly
+    return dset
+
+def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
+    dset = []
+    data_df = pd.read_csv(path)
+    events_lt = data_df['event'].unique()
+    for event in events_lt:
+        event_df = data_df[data_df['event']==event]
+        event_et = event_df['et']
+        dset.append(event_et)
+    dset = np.array(dset)
+    return dset
+
+def csv_ba_data(dset, et_range = (20,100), ele_p=0.9, tau_p=0.9, split=0.1):
+    # dset shape (n, 252)
+    n = int(dset.shape[0]*split)
+    a_index = np.sort(np.random.choice(dset.shape[0], n, replace=False))
+    adata = dset[a_index]
+    bgdata = np.delete(dset, a_index, axis=0)
+
+    for idx in range(adata.shape[0]):
+        rand_idx = np.random.randint(0, 252)
+        adata[idx][rand_idx] = np.random.uniform(et_range[0],et_range[1])
+
+    return bgdata, adata
 
 def raw_to_matrix(data, save_path=None):
     """data: pandas dataframe of the raw data generated from the data.py file"""
@@ -83,9 +113,12 @@ def fict_data():
     adata = np.load('./Python/data/ELECTRONdata_raw_2d.npy')
     adata = adata.reshape(adata.shape[0], int(adata.shape[1]*adata.shape[2]))
 
-    return xy_dataset(bgdata, adata, split=0.2, scale=True, save_path='./Python/data/splitdata/') 
-
+    return xy_dataset(bgdata, adata, split=0.2, scale=True, save_path='./Python/data/splitdata/')
 
 # Simple Raw Data data Generator
 if __name__=='__main__':
-    
+    print('Started Data processing...')
+    dset = load_h5_data()
+    bgdata, adata = csv_ba_data(dset)
+    xy_dataset(bgdata, adata, save_path='./Python/data/h5xydata/')
+    print('Completed processing data!')

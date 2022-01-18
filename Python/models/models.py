@@ -6,7 +6,7 @@ import tensorflow as tf
 
 ENCODING_DIM = 3
 
-def fc_dnn(ip_dim=252):
+def fc_dnn(ip_dim=252, load_wt = None):
     """
     Fully Connected DNN Autoencoder Model
     Total params: 38,108
@@ -25,11 +25,14 @@ def fc_dnn(ip_dim=252):
 
     # This model maps an input to its reconstruction
     model = Model(flat_input, decoded, name='fc_dnn_ae')
+    if load_wt:
+       model.load_weights(load_wt)
+   
     model.summary()
 
     return model
 
-def spc_dnn(ip_dim=252):
+def spc_dnn(ip_dim=252, load_wt = None):
 
    """
    Model Info:
@@ -92,11 +95,14 @@ def spc_dnn(ip_dim=252):
    outputlt.append(Dense(1, activation='relu')(decoded[:,-5:]))
    output = keras.layers.concatenate(outputlt, name="output_layer")
    model = keras.models.Model(input, output)
+   if load_wt:
+       model.load_weights(load_wt)
+
    model.summary()
 
    return model
 
-def pc_dnn(ip_dim=252):
+def pc_dnn(ip_dim=252, load_wt = None):
    """
    Fully connecting only several internal blocks in sets of f == 4.
    Total params: 10,572 (~ 4 times smallers)
@@ -142,6 +148,9 @@ def pc_dnn(ip_dim=252):
    
    output = keras.layers.concatenate(outputlt, name="output_layer")
    model = keras.models.Model(input, output)
+   if load_wt:
+       model.load_weights(load_wt)
+       
    model.summary()
 
    return model
