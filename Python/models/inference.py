@@ -8,8 +8,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 MODEL_PATH = './Python/models/results/'
-DATA_PATH = './Python/data/splitdata/'
-MODEL_NAME = 'fc_dnn'
+DATA_PATH = './Python/data/h5xydata/'
+MODEL_NAME = 'fc_dnn_rd'
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)

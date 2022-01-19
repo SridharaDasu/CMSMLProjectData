@@ -15,7 +15,7 @@ PT_MODEL_NAME = 'fc_dnn'
 
 if __name__=='__main__':
     # Importing Processed Data
-    data_path = './Python/data/splitdata/'
+    data_path = './Python/data/h5xydata/'
     x_train = np.load(data_path+'x_train.npy')
     y_train = np.load(data_path+'x_test.npy')
 

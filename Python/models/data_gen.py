@@ -5,6 +5,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import h5py
+from tqdm import tqdm
 
 DIM = (14, 18)   # Eta x Phi
 
@@ -18,11 +19,15 @@ def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
     dset = []
     data_df = pd.read_csv(path)
     events_lt = data_df['event'].unique()
-    for event in events_lt:
+    """for event in tqdm(events_lt):
         event_df = data_df[data_df['event']==event]
         event_et = event_df['et']
-        dset.append(event_et)
-    dset = np.array(dset)
+        dset.append(event_et)"""
+    grouped = data_df.groupby('event')
+    lt = list(grouped['et'])
+    lt_new = [x[1].values for x in lt]
+    dset = np.array(lt_new)
+
     return dset
 
 def csv_ba_data(dset, et_range = (20,100), ele_p=0.9, tau_p=0.9, split=0.1):
@@ -72,7 +77,7 @@ def scaler(dataset, save_path=None, use_new=True):
     
     return dataset
 
-def xy_dataset(bgdata, adata, split=0.2, scale=True, save_path=None):
+def xy_dataset(bgdata, adata, split=0.1, scale=True, save_path=None):
     """Take in background and anomaly (electron/tau) data and outputs data in x y format with split"""
     """Input 1D formatted data (simple reshape)"""
     ad_labels = np.ones(adata.shape[0])
@@ -118,7 +123,8 @@ def fict_data():
 # Simple Raw Data data Generator
 if __name__=='__main__':
     print('Started Data processing...')
-    dset = load_h5_data()
+    dset = load_csv_data(path = '/nfs_scratch/dasu/2022-01/CMSSW_11_1_9/src/L1Trigger/L1TRegionDumper/test/L1TRegionDump.csv')
+    print('Data Loaded')
     bgdata, adata = csv_ba_data(dset)
     xy_dataset(bgdata, adata, save_path='./Python/data/h5xydata/')
     print('Completed processing data!')
