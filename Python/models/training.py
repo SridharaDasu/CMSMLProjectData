@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-from models import fc_dnn, pc_dnn
+from models import fc_dnn, pc_dnn, spc_dnn
 
 EPOCHS = 200
 BATCH_SIZE = 512
@@ -11,7 +11,7 @@ VAL_SPLIT = 0.2
 MODEL_PATH = './Python/models/results/'
 MODEL_NAME = 'pc_dnn_rd'
 PT_PATH = './Python/models/results/pt_weights/'  # Keep the pretrained weights in this folder
-PT_MODEL_NAME = 'fc_dnn'
+PT_MODEL_NAME = 'pc_dnn'
 
 if __name__=='__main__':
     # Importing Processed Data
