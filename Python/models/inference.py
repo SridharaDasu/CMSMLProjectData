@@ -9,7 +9,7 @@ import seaborn as sns
 
 MODEL_PATH = './Python/models/results/'
 DATA_PATH = './Python/data/h5xydata/'
-MODEL_NAME = 'pc_dnn_rd'
+MODEL_NAME = 'spc_dnn_rd_20'
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)
