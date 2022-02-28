@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
+import keras.backend as K
+from keras.layers import MaxPooling2D
 from models import fc_dnn, pc_dnn, spc_dnn
 
 EPOCHS = 200
@@ -12,6 +14,22 @@ MODEL_PATH = './Python/models/results/'
 MODEL_NAME = 'spc_dnn_rd_20'
 PT_PATH = './Python/models/results/pt_weights/'  # Keep the pretrained weights in this folder
 PT_MODEL_NAME = 'spc_dnn'
+
+def max_pool_mse(y_true, y_pred):
+            
+    # calculate loss, using y_pred
+    max_pool_2d = MaxPooling2D(pool_size=(3, 3), strides=(3, 3), padding='same')
+    y_pred = K.reshape(y_pred, (y_pred.shape[0], 14, 18, 1))
+    pooled_ypred = max_pool_2d(y_pred)
+    pooled_ypred = K.reshape(pooled_ypred, (pooled_ypred.shape[0], 5, 6))
+
+    y_true = K.reshape(y_true, (y_true.shape[0], 14, 18, 1))
+    pooled_ytrue = max_pool_2d(y_true)
+    pooled_ytrue = K.reshape(pooled_ytrue, (pooled_ytrue.shape[0], 5, 6))
+
+    loss = K.mean(K.square(pooled_ypred - pooled_ytrue), axis=-1)
+        
+    return loss
 
 if __name__=='__main__':
     # Importing Processed Data
@@ -28,7 +46,7 @@ if __name__=='__main__':
     with open(MODEL_PATH+MODEL_NAME+'.json','w') as json_file:
         json_file.write(model_arch)
 
-    model.compile(loss='mse', metrics=['msle'], optimizer='adam')
+    model.compile(loss=max_pool_mse, metrics=['msle', 'mse'], optimizer='adam')
     chk = ModelCheckpoint(MODEL_PATH+'weights_%s.h5' % MODEL_NAME, monitor='val_loss', mode='min', save_best_only=True, save_weights_only=True, verbose=1)
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=3)
 

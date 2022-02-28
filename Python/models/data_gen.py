@@ -15,6 +15,14 @@ def load_h5_data(path = './Python/data/ZB2018D.h5', dname='l1Region_cyl'):
     dset = dset[:,:,0]   # modify axis accordingly
     return dset
 
+def preprocess(dset, window_n=1000):
+    """dset: np array shape(n, 252)
+    window_n: rolling """
+
+    # Take the global region average for et and subtract 
+    dset = dset - dset[:window_n].mean()
+    return dset
+
 def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
     dset = []
     data_df = pd.read_csv(path)
@@ -26,11 +34,11 @@ def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
     grouped = data_df.groupby('event')
     lt = list(grouped['et'])
     lt_new = [x[1].values for x in lt]
-    dset = np.array(lt_new)
+    dset = preprocess(np.array(lt_new))
 
     return dset
 
-def csv_ba_data(dset, et_range = (20,100), ele_p=0.9, tau_p=0.9, split=0.1):
+def csv_ba_data(dset, et_range = (50,100), ele_p=0.9, tau_p=0.9, split=0.1):
     # dset shape (n, 252)
     n = int(dset.shape[0]*split)
     a_index = np.sort(np.random.choice(dset.shape[0], n, replace=False))
