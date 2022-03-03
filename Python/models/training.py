@@ -11,7 +11,7 @@ EPOCHS = 200
 BATCH_SIZE = 512
 VAL_SPLIT = 0.2
 MODEL_PATH = './Python/models/results/'
-MODEL_NAME = 'spc_dnn_rd_20'
+MODEL_NAME = 'spc_dnn_rd_50'
 PT_PATH = './Python/models/results/pt_weights/'  # Keep the pretrained weights in this folder
 PT_MODEL_NAME = 'spc_dnn'
 
@@ -19,15 +19,17 @@ def max_pool_mse(y_true, y_pred):
             
     # calculate loss, using y_pred
     max_pool_2d = MaxPooling2D(pool_size=(3, 3), strides=(3, 3), padding='same')
-    y_pred = K.reshape(y_pred, (y_pred.shape[0], 14, 18, 1))
+    y_pred = K.reshape(y_pred, (K.shape(y_pred)[0], 14, 18, 1))
     pooled_ypred = max_pool_2d(y_pred)
-    pooled_ypred = K.reshape(pooled_ypred, (pooled_ypred.shape[0], 5, 6))
+    pooled_ypred = K.reshape(pooled_ypred, (K.shape(y_pred)[0], 5, 6))
 
-    y_true = K.reshape(y_true, (y_true.shape[0], 14, 18, 1))
+    y_true = K.reshape(y_true, (K.shape(y_true)[0], 14, 18, 1))
     pooled_ytrue = max_pool_2d(y_true)
-    pooled_ytrue = K.reshape(pooled_ytrue, (pooled_ytrue.shape[0], 5, 6))
+    pooled_ytrue = K.reshape(pooled_ytrue, (K.shape(y_true)[0], 5, 6))
+    print("MAX POOL: ", pooled_ytrue.shape, pooled_ypred.shape)
 
-    loss = K.mean(K.square(pooled_ypred - pooled_ytrue), axis=-1)
+    loss = K.mean(K.square(pooled_ypred - pooled_ytrue), axis=0)
+    print("LOSS SHAPE INTENAL:", loss.shape)
         
     return loss
 

@@ -6,15 +6,18 @@ from sklearn.metrics import confusion_matrix, accuracy_score, classification_rep
 from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve, auc
 from matplotlib import pyplot as plt
 import seaborn as sns
+from Python.models.training import max_pool_mse
 
 MODEL_PATH = './Python/models/results/'
 DATA_PATH = './Python/data/h5xydata/'
-MODEL_NAME = 'spc_dnn_rd_20'
+MODEL_NAME = 'fc_dnn_rd_50'
+#LOSS = keras.losses.mse
+LOSS = max_pool_mse
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)
   # provides losses of individual instances
-  reconstruction_errors = keras.losses.mse(reconstructions, x_train)
+  reconstruction_errors = LOSS(reconstructions, x_train)
   # threshold for anomaly scores
   threshold = np.mean(reconstruction_errors.numpy()) \
       + np.std(reconstruction_errors.numpy())
@@ -22,8 +25,10 @@ def find_threshold(model, x_train):
 
 def get_predictions(model, x_test_scaled, threshold):
   predictions = model.predict(x_test_scaled)
+  print("PRED SHAPE:-----------------", predictions.shape)
   # provides losses of individual instances
-  errors = keras.losses.mse(predictions, x_test_scaled)
+  errors = LOSS(predictions, x_test_scaled)
+  print("ERROR SHAPE:-----------------", errors.shape)
   # 0 = anomaly, 1 = normal
   anomaly_mask = pd.Series(errors) > threshold
   preds = anomaly_mask.map(lambda x: 1.0 if x == True else 0.0)
