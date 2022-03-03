@@ -38,7 +38,7 @@ def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
 
     return dset
 
-def csv_ba_data(dset, et_range = (50,100), ele_p=0.9, tau_p=0.9, split=0.1):
+def csv_ba_data(dset, et_range = (20,100), ele_p=0.9, tau_p=0.9, split=0.1):
     # dset shape (n, 252)
     n = int(dset.shape[0]*split)
     a_index = np.sort(np.random.choice(dset.shape[0], n, replace=False))

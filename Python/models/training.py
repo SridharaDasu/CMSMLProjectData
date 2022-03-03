@@ -26,10 +26,10 @@ def max_pool_mse(y_true, y_pred):
     y_true = K.reshape(y_true, (K.shape(y_true)[0], 14, 18, 1))
     pooled_ytrue = max_pool_2d(y_true)
     pooled_ytrue = K.reshape(pooled_ytrue, (K.shape(y_true)[0], 5, 6))
-    print("MAX POOL: ", pooled_ytrue.shape, pooled_ypred.shape)
+    #print("MAX POOL: ", pooled_ytrue.shape, pooled_ypred.shape)
 
-    loss = K.mean(K.square(pooled_ypred - pooled_ytrue), axis=0)
-    print("LOSS SHAPE INTENAL:", loss.shape)
+    loss = K.mean(K.mean(K.square(pooled_ypred - pooled_ytrue), axis=-1), axis=-1)
+    #print("LOSS SHAPE INTERNAL:", loss.shape)
         
     return loss
 

@@ -10,7 +10,7 @@ from Python.models.training import max_pool_mse
 
 MODEL_PATH = './Python/models/results/'
 DATA_PATH = './Python/data/h5xydata/'
-MODEL_NAME = 'fc_dnn_rd_50'
+MODEL_NAME = 'spc_dnn_rd_20'
 #LOSS = keras.losses.mse
 LOSS = max_pool_mse
 
@@ -25,10 +25,10 @@ def find_threshold(model, x_train):
 
 def get_predictions(model, x_test_scaled, threshold):
   predictions = model.predict(x_test_scaled)
-  print("PRED SHAPE:-----------------", predictions.shape)
+  #print("PRED SHAPE:-----------------", predictions.shape)
   # provides losses of individual instances
   errors = LOSS(predictions, x_test_scaled)
-  print("ERROR SHAPE:-----------------", errors.shape)
+  #print("ERROR SHAPE:-----------------", errors.shape)
   # 0 = anomaly, 1 = normal
   anomaly_mask = pd.Series(errors) > threshold
   preds = anomaly_mask.map(lambda x: 1.0 if x == True else 0.0)
