@@ -11,7 +11,7 @@ EPOCHS = 200
 BATCH_SIZE = 512
 VAL_SPLIT = 0.2
 MODEL_PATH = './Python/models/results/'
-MODEL_NAME = 'spc_dnn_rd_50'
+MODEL_NAME = 'spc_dnn_rd_20_mse'
 PT_PATH = './Python/models/results/pt_weights/'  # Keep the pretrained weights in this folder
 PT_MODEL_NAME = 'spc_dnn'
 
@@ -48,7 +48,7 @@ if __name__=='__main__':
     with open(MODEL_PATH+MODEL_NAME+'.json','w') as json_file:
         json_file.write(model_arch)
 
-    model.compile(loss=max_pool_mse, metrics=['msle', 'mse'], optimizer='adam')
+    model.compile(loss='mse', metrics=['msle', max_pool_mse], optimizer='adam')
     chk = ModelCheckpoint(MODEL_PATH+'weights_%s.h5' % MODEL_NAME, monitor='val_loss', mode='min', save_best_only=True, save_weights_only=True, verbose=1)
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=3)
 

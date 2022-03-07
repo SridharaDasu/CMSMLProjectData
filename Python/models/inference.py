@@ -10,9 +10,9 @@ from Python.models.training import max_pool_mse
 
 MODEL_PATH = './Python/models/results/'
 DATA_PATH = './Python/data/h5xydata/'
-MODEL_NAME = 'spc_dnn_rd_20'
-#LOSS = keras.losses.mse
-LOSS = max_pool_mse
+MODEL_NAME = 'spc_dnn_rd_50_mse'
+LOSS = keras.losses.mse
+#LOSS = max_pool_mse
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)
