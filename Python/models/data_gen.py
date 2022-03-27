@@ -8,6 +8,7 @@ import h5py
 from tqdm import tqdm
 
 DIM = (14, 18)   # Eta x Phi
+MEAN = 0
 
 def load_h5_data(path = './Python/data/ZB2018D.h5', dname='l1Region_cyl'):
     data_file = h5py.File(path, 'r')
@@ -15,15 +16,22 @@ def load_h5_data(path = './Python/data/ZB2018D.h5', dname='l1Region_cyl'):
     dset = dset[:,:,0]   # modify axis accordingly
     return dset
 
-def preprocess(dset, window_n=1000):
+def preprocess(dset, window_n=1000, use_cache_mean=False):
     """dset: np array shape(n, 252)
     window_n: rolling """
+    global MEAN
 
-    # Take the global region average for et and subtract 
-    dset = dset - dset[:window_n].mean()
+    # Take the global region average for et and subtract
+    if not use_cache_mean:
+        MEAN =  dset[:window_n].mean()
+        print("SETTING MEAN to:------------------- ", MEAN)
+    else:
+        print("Using preset Mean:--------------------- ", MEAN)
+
+    dset = dset - MEAN
     return dset
 
-def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
+def load_csv_data(path = './Python/data/L1TRegionDump.csv', use_cache_mean = False):
     dset = []
     data_df = pd.read_csv(path)
     events_lt = data_df['event'].unique()
@@ -34,7 +42,7 @@ def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
     grouped = data_df.groupby('event')
     lt = list(grouped['et'])
     lt_new = [x[1].values for x in lt]
-    dset = preprocess(np.array(lt_new))
+    dset = preprocess(np.array(lt_new),1000, use_cache_mean)
 
     return dset
 
@@ -57,7 +65,6 @@ def raw_to_matrix(data, save_path=None):
     mem_batch = data.mem_batch.unique()
     events = data.event.unique()
     for mb in mem_batch:
-        print(mb)
         df_mb = data[data.mem_batch == mb]
         for en in events:
             df_en = df_mb[df_mb.event == en]
@@ -85,7 +92,7 @@ def scaler(dataset, save_path=None, use_new=True):
     
     return dataset
 
-def xy_dataset(bgdata, adata, split=0.99, scale=True, save_path=None):
+def xy_dataset(bgdata, adata, split=0.98, scale=True, save_path=None):
     """Take in background and anomaly (electron/tau) data and outputs data in x y format with split"""
     """Input 1D formatted data (simple reshape)"""
     ad_labels = np.ones(adata.shape[0])
@@ -107,10 +114,10 @@ def xy_dataset(bgdata, adata, split=0.99, scale=True, save_path=None):
         x_test = scaler(x_test, save_path='./Python/models/results/scaler.pkl', use_new=False)
     
     if save_path:
-        np.save(save_path+'x_train_vbfh.npy', x_train, allow_pickle=True, fix_imports=True)
-        np.save(save_path+'x_test_vbfh.npy', x_test, allow_pickle=True, fix_imports=True)
-        np.save(save_path+'y_train_vbfh.npy', y_train, allow_pickle=True, fix_imports=True)
-        np.save(save_path+'y_test_vbfh.npy', y_test, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'x_train.npy', x_train, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'x_test.npy', x_test, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'y_train.npy', y_train, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'y_test.npy', y_test, allow_pickle=True, fix_imports=True)
 
     return x_train, x_test, y_train, y_test
 
@@ -131,8 +138,11 @@ def fict_data():
 # Simple Raw Data data Generator
 if __name__=='__main__':
     print('Started Data processing...')
-    dset = load_csv_data(path = '/nfs_scratch/hsharma/CMSMLProjectData/Python/data/old-cms-vbfh.csv')
+    bgdata = load_csv_data('./Python/data/L1TRegionDump.csv')
+    adata = load_csv_data(path = './Python/data/cms-vbfh.csv', use_cache_mean = True)
     print('Data Loaded')
-    bgdata, adata = csv_ba_data(dset)
-    xy_dataset(bgdata, adata, save_path='./Python/data/h5xydata/')
+    #bgdata, adata = csv_ba_data(anomaly_dset, bdata_dset)
+    bgdata = bgdata[:len(adata)]
+    print(bgdata.shape, adata.shape)
+    xy_dataset(bgdata, adata, save_path='./Python/data/h5xydata/vbfh_')
     print('Completed processing data!')

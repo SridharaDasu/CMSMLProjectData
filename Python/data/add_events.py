@@ -1,7 +1,7 @@
 import pandas as pd
 
 COL = ["eta","phi","et","position","electron","tau"]
-file_path = "./Python/data/old-cms-vbfh.csv"
+file_path = "./Python/data/cms-vbfh.csv"
 
 df = pd.read_csv(file_path, names=["eta","phi","et","position","electron","tau"])
 event_num = len(df)//252

@@ -1,3 +1,4 @@
+import pathlib
 import numpy as np
 import pandas as pd
 from tensorflow import keras
@@ -9,10 +10,25 @@ import seaborn as sns
 from Python.models.training import max_pool_mse
 
 MODEL_PATH = './Python/models/results/'
+XTRAIN_DSET = "x_train.npy"  
+XTEST_DSET = "vbfh_x_train.npy"   #train due to majority split to train after preprocess 
+YTEST_DSET = "vbfh_y_train.npy"
 DATA_PATH = './Python/data/h5xydata/'
-MODEL_NAME = 'spc_dnn_rd_50_mse'
+MODEL_LIST = ["spc_dnn_rd_50_mse", "pc_dnn_rd_50_mse", "fc_dnn_rd_50_mse"]
+MODEL_NAME = ""
+
 LOSS = keras.losses.mse
 #LOSS = max_pool_mse
+FOLDER_NAME = "VBFH_Experiment"
+MODEL_TYPE = "MSE"
+LOSS_TYPE = "MSE"
+PREFIX = "_VBFH"
+EXP_SUB = MODEL_TYPE+"_"+LOSS_TYPE+PREFIX
+BASE_PATH = MODEL_PATH+FOLDER_NAME+"/%s/" % (EXP_SUB)
+
+# Setting up experiment folder
+pathlib.Path(MODEL_PATH+FOLDER_NAME).mkdir(parents=False, exist_ok=True)
+pathlib.Path(BASE_PATH).mkdir(parents=False, exist_ok=True)
 
 def find_threshold(model, x_train):
   reconstructions = model.predict(x_train)
@@ -42,7 +58,7 @@ def cm_plot(y_pred, y_test):
     plt.title("Confusion matrix")
     plt.ylabel('True class')
     plt.xlabel('Predicted class')
-    plt.savefig(MODEL_PATH+MODEL_NAME+'_cm_plot.png')
+    plt.savefig(BASE_PATH+MODEL_NAME+'_cm_plot.png')
     plt.show()
 
 
@@ -66,7 +82,7 @@ def recon_error_plot(error_df):
     axes[1].set_ylabel("Data (binning = 10)")
     axes[1].set_xlabel("Reconstruction Error (MSE)")
 
-    plt.savefig(MODEL_PATH+MODEL_NAME+'_recon_error.png')
+    plt.savefig(BASE_PATH+MODEL_NAME+'_recon_error.png')
     plt.show()
 
 def ploting_curves(y_test, y_pred):
@@ -138,7 +154,7 @@ def ploting_curves(y_test, y_pred):
         ax.yaxis.set_tick_params(labelleft=True, which="major")
         ax.grid(False)
 
-    plt.savefig(MODEL_PATH+MODEL_NAME+'_curves.png')
+    plt.savefig(BASE_PATH+MODEL_NAME+'_curves.png')
     plt.show()
 
 def class_thresh_error(error_df, threshold):
@@ -155,40 +171,46 @@ def class_thresh_error(error_df, threshold):
     plt.title("Reconstruction error for different classes")
     plt.ylabel("Reconstruction error")
     plt.xlabel("Data point index")
-    plt.savefig(MODEL_PATH+MODEL_NAME+'_class_error.png')
+    plt.savefig(BASE_PATH+MODEL_NAME+'_class_error.png')
     plt.show()
 
 if __name__=='__main__':
-    x_train = np.load(DATA_PATH+'x_train.npy')
-    x_test = np.load(DATA_PATH+'x_test.npy')
-    y_test = np.load(DATA_PATH+'y_test.npy')
+    x_train = np.load(DATA_PATH+XTRAIN_DSET)
+    x_test = np.load(DATA_PATH+XTEST_DSET)
+    y_test = np.load(DATA_PATH+YTEST_DSET)
 
-    # load json and create model
-    model_json = open(MODEL_PATH+MODEL_NAME+'.json', 'r')
-    model_arch = model_json.read()
-    model_json.close()
-    model = model_from_json(model_arch)
-    # load weights into new model
-    model.load_weights(MODEL_PATH+'weights_%s.h5' % MODEL_NAME)
-    print("Loaded model from disk")
+    for mname in MODEL_LIST:
+        MODEL_NAME = mname
+        # load json and create model
+        model_json = open(MODEL_PATH+MODEL_NAME+'.json', 'r')
+        model_arch = model_json.read()
+        model_json.close()
+        model = model_from_json(model_arch)
+        # load weights into new model
+        model.load_weights(MODEL_PATH+'weights_%s.h5' % MODEL_NAME)
+        print("Loaded model from disk")
 
-    predictions = model.predict(x_test)
-    mse = keras.losses.mse(predictions, x_test)
-    msle = keras.losses.msle(predictions, x_test)
-    error_df = pd.DataFrame({'reconstruction_mse': mse,
-                            'reconstruction_msle': msle,
-                            'true_class': y_test})
-    print(error_df.describe())
-    recon_error_plot(error_df)
+        predictions = model.predict(x_test)
+        mse = keras.losses.mse(predictions, x_test)
+        msle = keras.losses.msle(predictions, x_test)
+        error_df = pd.DataFrame({'reconstruction_mse': mse,
+                                'reconstruction_msle': msle,
+                                'true_class': y_test})
+        print(error_df.describe())
+        recon_error_plot(error_df)
 
-    # Plotting ROC and PR curves
-    ploting_curves(error_df.true_class, error_df.reconstruction_msle)
+        # Plotting ROC and PR curves
+        ploting_curves(error_df.true_class, error_df.reconstruction_msle)
 
-    threshold = find_threshold(model, x_train)
-    print(f"Threshold: {threshold}")
-    class_thresh_error(error_df, threshold)
+        threshold = find_threshold(model, x_train)
+        print(f"Threshold: {threshold}")
+        class_thresh_error(error_df, threshold)
 
-    predictions = get_predictions(model, x_test, threshold)
-    cm_plot(predictions, y_test)
-    print(accuracy_score(predictions, y_test))
-    print(classification_report(predictions, y_test))
+        predictions = get_predictions(model, x_test, threshold)
+        cm_plot(predictions, y_test)
+        print(accuracy_score(predictions, y_test))
+        cfr = classification_report(predictions, y_test)
+        cfr_file = open(BASE_PATH+MODEL_NAME+"_cfr.txt")
+        cfr_file.write(cfr)
+        cfr_file.close()
+        print(cfr)
