@@ -38,7 +38,7 @@ def load_csv_data(path = './Python/data/L1TRegionDump.csv'):
 
     return dset
 
-def csv_ba_data(dset, et_range = (50,100), ele_p=0.9, tau_p=0.9, split=0.1):
+def csv_ba_data(dset, et_range = (50,100), ele_p=0.9, tau_p=0.9, split=0.0):
     # dset shape (n, 252)
     n = int(dset.shape[0]*split)
     a_index = np.sort(np.random.choice(dset.shape[0], n, replace=False))
@@ -85,7 +85,7 @@ def scaler(dataset, save_path=None, use_new=True):
     
     return dataset
 
-def xy_dataset(bgdata, adata, split=0.1, scale=True, save_path=None):
+def xy_dataset(bgdata, adata, split=0.99, scale=True, save_path=None):
     """Take in background and anomaly (electron/tau) data and outputs data in x y format with split"""
     """Input 1D formatted data (simple reshape)"""
     ad_labels = np.ones(adata.shape[0])
@@ -107,10 +107,10 @@ def xy_dataset(bgdata, adata, split=0.1, scale=True, save_path=None):
         x_test = scaler(x_test, save_path='./Python/models/results/scaler.pkl', use_new=False)
     
     if save_path:
-        np.save(save_path+'x_train.npy', x_train, allow_pickle=True, fix_imports=True)
-        np.save(save_path+'x_test.npy', x_test, allow_pickle=True, fix_imports=True)
-        np.save(save_path+'y_train.npy', y_train, allow_pickle=True, fix_imports=True)
-        np.save(save_path+'y_test.npy', y_test, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'x_train_vbfh.npy', x_train, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'x_test_vbfh.npy', x_test, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'y_train_vbfh.npy', y_train, allow_pickle=True, fix_imports=True)
+        np.save(save_path+'y_test_vbfh.npy', y_test, allow_pickle=True, fix_imports=True)
 
     return x_train, x_test, y_train, y_test
 
@@ -131,7 +131,7 @@ def fict_data():
 # Simple Raw Data data Generator
 if __name__=='__main__':
     print('Started Data processing...')
-    dset = load_csv_data(path = '/nfs_scratch/dasu/2022-01/CMSSW_11_1_9/src/L1Trigger/L1TRegionDumper/test/L1TRegionDump.csv')
+    dset = load_csv_data(path = '/nfs_scratch/hsharma/CMSMLProjectData/Python/data/old-cms-vbfh.csv')
     print('Data Loaded')
     bgdata, adata = csv_ba_data(dset)
     xy_dataset(bgdata, adata, save_path='./Python/data/h5xydata/')
