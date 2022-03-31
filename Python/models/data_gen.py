@@ -92,7 +92,7 @@ def scaler(dataset, save_path=None, use_new=True):
     
     return dataset
 
-def xy_dataset(bgdata, adata, split=0.98, scale=True, save_path=None):
+def xy_dataset(bgdata, adata, split=0.95, scale=True, save_path=None):
     """Take in background and anomaly (electron/tau) data and outputs data in x y format with split"""
     """Input 1D formatted data (simple reshape)"""
     ad_labels = np.ones(adata.shape[0])

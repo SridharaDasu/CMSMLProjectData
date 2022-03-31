@@ -11,16 +11,16 @@ from Python.models.training import max_pool_mse
 
 MODEL_PATH = './Python/models/results/'
 XTRAIN_DSET = "x_train.npy"  
-XTEST_DSET = "vbfh_x_train.npy"   #train due to majority split to train after preprocess 
-YTEST_DSET = "vbfh_y_train.npy"
+XTEST_DSET = "vbfh_x_test.npy"   #train due to majority split to train after preprocess 
+YTEST_DSET = "vbfh_y_test.npy"
 DATA_PATH = './Python/data/h5xydata/'
-MODEL_LIST = ["spc_dnn_rd_50_mse", "pc_dnn_rd_50_mse", "fc_dnn_rd_50_mse"]
+MODEL_LIST = ["spc_dnn_rd_50", "pc_dnn_rd_50", "fc_dnn_rd_50"]
 MODEL_NAME = ""
 
 LOSS = keras.losses.mse
 #LOSS = max_pool_mse
 FOLDER_NAME = "VBFH_Experiment"
-MODEL_TYPE = "MSE"
+MODEL_TYPE = "MPMSE"
 LOSS_TYPE = "MSE"
 PREFIX = "_VBFH"
 EXP_SUB = MODEL_TYPE+"_"+LOSS_TYPE+PREFIX
@@ -210,7 +210,7 @@ if __name__=='__main__':
         cm_plot(predictions, y_test)
         print(accuracy_score(predictions, y_test))
         cfr = classification_report(predictions, y_test)
-        cfr_file = open(BASE_PATH+MODEL_NAME+"_cfr.txt")
+        cfr_file = open(BASE_PATH+MODEL_NAME+"_cfr.txt",'w')
         cfr_file.write(cfr)
         cfr_file.close()
         print(cfr)
